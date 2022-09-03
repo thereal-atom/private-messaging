@@ -1,9 +1,9 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import type { UserConfig } from 'vite';
+import { sveltekit } from "@sveltejs/kit/vite";
+import type { UserConfig } from "vite";
 
 const config: UserConfig = {
-	plugins: [sveltekit()],
-	server: { port: 1337 },
+    plugins: [ sveltekit() ],
+    server: { port: 1337 },
 };
 
 export default config;
