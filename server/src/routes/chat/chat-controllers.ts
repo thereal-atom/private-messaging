@@ -36,6 +36,19 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // const get = async (req: Request, res: Response, next: NextFunction) => {};
+
+const getAll = (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // const chats = await database.chat.findMany();
+
+        // console.log(chats);
+
+        res.sendStatus(401);
+    } catch (err) {
+        next(err);
+    };
+};
+
 // const update = async (req: Request, res: Response, next: NextFunction) => {};
 // const delete = async (req: Request, res: Response, next: NextFunction) => {};
 
@@ -81,4 +94,5 @@ const createMessage = async (req: Request, res: Response, next: NextFunction) =>
 export {
     create,
     createMessage,
+    getAll,
 };
