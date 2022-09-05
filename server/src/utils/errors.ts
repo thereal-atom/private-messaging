@@ -10,7 +10,7 @@ export const handleError = (err: any, res?: Response) => {
         process.exit(1);
 
     if (res) res.status(err.statusCode).send({
-        message: err.message,
+        message: err.message || "unknown error",
         code: err.statusCode,
     });
 };

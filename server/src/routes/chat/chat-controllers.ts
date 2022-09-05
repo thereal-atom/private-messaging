@@ -37,13 +37,21 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 // const get = async (req: Request, res: Response, next: NextFunction) => {};
 
-const getAll = (req: Request, res: Response, next: NextFunction) => {
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // const chats = await database.chat.findMany();
+        if (!req.user) throw new AppError(401, "unauthorized");
 
-        // console.log(chats);
+        const chats = await database.chat.findMany({
+            where: {
+                members: {
+                    some: {
+                        email: req.user.email,
+                    },
+                },
+            },
+        });
 
-        res.sendStatus(401);
+        res.send(chats);
     } catch (err) {
         next(err);
     };

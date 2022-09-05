@@ -22,7 +22,7 @@
 
 <div class="w-screen h-screen flex flex-col items-center justify-center">
     <form
-        class="w-1/2 h-1/2 flex flex-col"
+        class="h-1/2 flex flex-col w-full px-12"
         on:submit|preventDefault={handleSignup}
     >
         <input
@@ -38,13 +38,13 @@
             placeholder="Email"
         />
         <input
-            type="text"
+            type="password"
             name="password"
             class="input"
             placeholder="Password"
         />
         <input
-            type="text"
+            type="password"
             name="confirmPassword"
             class="input"
             placeholder="Confirm Password"

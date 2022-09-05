@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { slide, fade } from "svelte/transition";
+    import { slide, fade, fly } from "svelte/transition";
 
     interface Chat {
         id: string;
@@ -90,14 +90,21 @@
         <div>
             <span class="font-bold">Whatsapp</span>
         </div>
-        <div
-            class="mt-1 hover:cursor-wait"
-            on:click={() => isSearchbarActive = !isSearchbarActive}
-        >
+        <div class="flex flex-row mt-1 pr-1">
+            <div
+                class="hover:cursor-wait"
+                on:click={() => isSearchbarActive = !isSearchbarActive}
+            >
+                <img
+                    src="/icons/search.svg"
+                    alt="search"
+                    class="hover:cursor-pointer"
+                />
+            </div>
             <img
-                src="/icons/search.svg"
-                alt="search"
-                class="mt-1 hover:cursor-pointer"
+                src="/icons/settings.svg"
+                alt="settings"
+                class="w-6 h-6 ml-4 hover:cursor-pointer"
             />
         </div>
     </div>
@@ -118,7 +125,7 @@
             />
         </div>
     {/if}
-    <div class="stories flex flex-row p-6">
+    <!-- <div class="stories flex flex-row p-6">
         <img
             src="/images/default-avatar.png"
             alt="avatar"
@@ -139,8 +146,8 @@
             alt="avatar"
             class="avatar"
         />
-    </div>
-    <div class="flex flex-row border border-solid border-secondary p-1 rounded-md mx-6 my-4 justify-between px-2">
+    </div> -->
+    <div class="flex flex-row border border-solid border-secondary p-1 rounded-md mx-6 my-4 mt-8 justify-between px-2">
         <span
             class="tab {selectedTab === "Pinned" && "active"}"
             on:click={() => selectedTab = "Pinned"}
@@ -160,32 +167,34 @@
             Chats
         </span>
     </div>
-    <div class="flex flex-col px-8 mt-8">
+    <div class="flex flex-col px-8 mt-8 relative">
         {#each Object.entries(chatSections) as [sectionTitle, sectionChats]}
             {#if selectedTab === sectionTitle}
-                <span class="font-bold text-secondary">{sectionTitle}</span>
-                <div class="flex flex-col my-4">
-                    {#each sectionChats as sectionChat}
-                        <a
-                            class="flex flex-row items-center my-2"
-                            href="/chats/{sectionChat.id}"
-                        >
-                            <img
-                                src={sectionChat.avatarUrl}
-                                alt="{sectionChat.name} avatar"
-                                class="w-10 h-10 rounded-full"
-                            />
-                            <div class="flex flex-col w-full ml-4">
-                                <span class="font-bold text-sm ml-0.5">{sectionChat.name}</span>
-                                <span class="opacity-50 text-xs mt-1 font-medium text-ellipsis">Latest message and this is what happend when it overflows</span>
-                            </div>
-                            <div class="flex flex-col items-end">
-                                <span class="font-bold text-xs text-secondary">11:00pm</span>
-                                <span class="flex items-center justify-center font-bold text-sm bg-accent rounded-full w-5 h-5 mt-2">4</span>
-                            </div>
-                        </a>
-                    {/each}
-                </div>
+                <div>
+                    <span class="font-bold text-secondary">{sectionTitle}</span>
+                    <div class="flex flex-col my-4">
+                        {#each sectionChats as sectionChat}
+                            <a
+                                class="flex flex-row items-center my-2"
+                                href="/chats/{sectionChat.id}"
+                            >
+                                <img
+                                    src={sectionChat.avatarUrl}
+                                    alt="{sectionChat.name} avatar"
+                                    class="w-10 h-10 rounded-full"
+                                />
+                                <div class="flex flex-col w-full ml-4">
+                                    <span class="font-bold text-sm ml-0.5">{sectionChat.name}</span>
+                                    <span class="opacity-50 text-xs mt-1 font-medium text-ellipsis">Latest message and this is what happend when it overflows</span>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="font-bold text-xs text-secondary">11:00pm</span>
+                                    <span class="flex items-center justify-center font-bold text-sm bg-accent rounded-full w-5 h-5 mt-2">4</span>
+                                </div>
+                            </a>
+                        {/each}
+                    </div>
+            </div>
             {/if}
         {/each}
     </div>
