@@ -1,23 +1,17 @@
 import { z } from "zod";
+import { PartialChat, PartialMessage } from "../../types";
 
-const validateChat = (chat: {
-    name: string;
-    type: string;
-    organizationId: string;
-}) => {
+const validateChat = (chat: PartialChat) => {
     const ChatSchema = z.object({
         name: z.string(),
         description: z.string(),
+        userEmails: z.array(z.string()),
     });
 
     return ChatSchema.safeParse(chat);
 };
 
-const validateMessage = (message: {
-    content: string;
-    chatId: string;
-    authorId: string;
-}) => {
+const validateMessage = (message: PartialMessage) => {
     const MessageSchema = z.object({
         content: z
             .string()

@@ -10,6 +10,14 @@ import {
     UpdatedChat,
 } from "./types";
 
+type ErrorEvent =
+    "messageCreate" |
+    "messageUpdate" |
+    "messageDelete" |
+    "chatCreate" |
+    "chatUpdate" |
+    "chatDelete";
+
 export interface ClientToServerEvents {
     messageCreate: (message: PartialMessage) => void;
     messageUpdate: (message: PartialUpdatedMessage) => void;
@@ -26,6 +34,10 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
     message: (message: string) => void;
     connected: () => void;
+    error: (data: {
+        event: ErrorEvent;
+        message: string;
+    }) => void;
     messageCreate: (message: Message) => void;
     messageUpdate: (message: UpdatedMessage) => void;
     messageDelete: (message: Message) => void;

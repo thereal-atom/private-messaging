@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "private-messaging-server",
   "version": "0.1.0",
   "description": "Server for private messaging",
   "main": "src/index.ts",

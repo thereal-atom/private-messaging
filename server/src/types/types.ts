@@ -35,12 +35,17 @@ export interface UpdatedMessage extends Message { previousContent: string };
 
 export interface PartialChat {
     name: string;
+    description: string;
+    userEmails: string[];
 };
 
 export interface PartialUpdatedChat extends PartialChat { previousName: string };
 
 export interface Chat extends PartialChat {
     id: string;
+    group: boolean;
+    avatarUrl: string;
+    messages: Message[];
 };
 
 export interface UpdatedChat extends Chat {

@@ -39,10 +39,11 @@ model Session {
 
 model Chat {
   id          String   @id
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   description String
   name        String
+  group       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   members  User[]
   messages Message[]

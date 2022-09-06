@@ -48,7 +48,6 @@ app.use((err, req: express.Request, res: express.Response) => {
 process.on("unhandledRejection", err => handleError(err));
 process.on("uncaughtException", err => handleError(err));
 
-
 const signals = [
     "SIGTERM",
     "SIGINT",

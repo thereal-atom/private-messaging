@@ -1,9 +1,43 @@
-<script>
-    const chat = {
+<script lang="ts">
+    import type { Message, User } from "private-messaging";
+    import { createMessage } from "$lib/api/chat";
+    import { page } from "$app/stores";
+    
+    const chat: {
+        id: string;
+        name: string;
+        messages: Message[];
+        avatarUrl: string;
+        group: boolean;
+    } = {
+        id: $page.params.id,
         name: "Oscar",
         avatarUrl: "/images/default-avatar.png",
         messages: [],
         group: false,
+    };
+
+    const user: User = {
+        id: "user_someid",
+        email: "oscar@gmail.com",
+        name: "Oscar",
+        avatar: {
+            id: "",
+            url: "",
+        },
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+    };
+
+    const sendMessage = (e: any) => {
+        const messageContent = e.target.messageContent.value
+        if (!messageContent) return;
+
+        createMessage({
+            authorId: "user_someid",
+            chatId: chat.id,
+            content: messageContent,
+        });
     };
 </script>
 <div class="flex flex-col h-screen max-h-screen">
@@ -38,22 +72,14 @@
         </div>
     </div>
     <div class="flex-auto flex flex-col overflow-y-scroll items-start h-full p-4">
-        <div class="message-container right"><div class="message">Lorem ipsum dolor sit</div></div>
-        <div class="message-container right"><div class="message">amet consectetur adipisicing elit. Voluptatum modi quo rerum eveniet</div></div>
-        <div class="message-container right"><div class="message">atque facilis hic, aspernatur iusto nisi! Tempora omnis fugiat ad rerum</div></div>
-        <div class="message-container right"><div class="message">accusamus accusantium</div></div>
-        <div class="message-container right"><div class="message">laboriosam</div></div>
-        <div class="message-container left"><div class="message">recusandae aliquid eligendi.</div></div>
-        <div class="message-container right"><div class="message">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Recusandae</div></div>
-        <div class="message-container left"><div class="message">veritatis ipsa, sapiente quae tempora expedita, distinctio architecto</div></div>
-        <div class="message-container left"><div class="message">quisquam impedit dicta eum.</div></div>
-        <div class="message-container right"><div class="message">Porro, et!</div></div>
-        <div class="message-container right"><div class="message">Vel</div></div>
-        <div class="message-container right"><div class="message">eius nemo quod fuga aliquam? Maiores?</div></div>
-        <div class="message-container left"><div class="message">Lorem ipsum dolor sit amet consectetur adipisicing elit.</div></div>
-        <div class="message-container left"><div class="message">Lorem</div></div>
+        {#each chat.messages as message}
+            <div class="message-container {message.authorId === user.id ? "right" : "left"}"><div class="message">{message.content}</div></div>
+        {/each}
     </div>
-    <div class="flex flex-row items-center p-4 border-t border-solid border-secondary">
+    <form
+        class="flex flex-row items-center p-4 border-t border-solid border-secondary"
+        on:submit|preventDefault={sendMessage}
+    >
         <img
             src="/icons/file.svg"
             alt="file"
@@ -62,13 +88,16 @@
         <input
             class="rounded-md ml-3 bg-dark-secondary w-full h-10 pl-4 font-bold text-sm"
             placeholder="Message {chat.name}"
+            name="messageContent"
         />
-        <img
-            src="/icons/send.svg"
-            alt="send"
-            class="w-10 h-10 ml-2 rounded-full p-2"
-        />
-    </div>
+        <button type="submit">
+            <img
+                src="/icons/send.svg"
+                alt="send"
+                class="w-10 h-10 ml-2 rounded-full p-2"
+            />
+        </button>
+    </form>
 </div>
 
 <style lang="postcss">

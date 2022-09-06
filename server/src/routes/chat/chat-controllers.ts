@@ -12,6 +12,8 @@ import validation from "./chat-validation";
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        if (!req.user) throw new AppError(401, "unauthorized");
+        
         const chatValidation = validation.validateChat(req.body);
 
         if (!chatValidation.success) throw new AppError(400, "chat validation error");
@@ -19,6 +21,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         const {
             name,
             description,
+            userEmails,
         } = chatValidation.data;
 
         const chat = await database.chat.create({
@@ -26,6 +29,13 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
                 id: genRanId("chat"),
                 name,
                 description,
+                group: userEmails.length > 1,
+                members: {
+                    connect: [
+                        { email: userEmails[0] },
+                        { email: /* req.user.email */ "oscarfal2006@gmail.com" },
+                    ],
+                },
             },
         });
 
