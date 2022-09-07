@@ -1,21 +1,31 @@
 <script lang="ts">
-    import type { Message, User } from "private-messaging";
-    import { createMessage } from "$lib/api/chat";
+    import type { User, Chat } from "private-messaging";
     import { page } from "$app/stores";
+    import api from "$lib/api";
+    import Loading from "$lib/components/Loading.svelte";
+
+    $: loading = true;
     
-    const chat: {
-        id: string;
-        name: string;
-        messages: Message[];
-        avatarUrl: string;
-        group: boolean;
-    } = {
-        id: $page.params.id,
-        name: "Oscar",
-        avatarUrl: "/images/default-avatar.png",
-        messages: [],
-        group: false,
-    };
+    let chat: Chat;
+    $: chat;
+
+    // = {
+    //     id: $page.params.id,
+    //     name: "Oscar",
+    //     avatarUrl: "/images/default-avatar.png",
+    //     messages: [],
+    //     group: false,
+    // };
+
+    api.chat.get($page.params.id).then(res => {
+        // loading = false;
+        if (res.ok) {
+            chat = res.data;
+        } else {
+            // TODO: handle error
+            console.log(res);
+        };
+    });
 
     const user: User = {
         id: "user_someid",
@@ -33,7 +43,7 @@
         const messageContent = e.target.messageContent.value
         if (!messageContent) return;
 
-        createMessage({
+        api.chat.createMessage({
             authorId: "user_someid",
             chatId: chat.id,
             content: messageContent,
@@ -41,41 +51,43 @@
     };
 </script>
 <div class="flex flex-col h-screen max-h-screen">
-    <div class="flex flex-row max-w-screen py-4 items-center border-b border-solid border-secondary">
-        <a
-            href="/chats"
-            class="w-24"
-        >
+    <Loading {loading}>
+        <div class="flex flex-row max-w-screen py-4 items-center border-b border-solid border-secondary">
+            <a
+                href="/chats"
+                class="w-24"
+            >
+                <img
+                    src="/icons/left-arrow.svg"
+                    alt="exit"
+                    class="w-8 h-8 ml-2"
+                />
+            </a>
             <img
-                src="/icons/left-arrow.svg"
-                alt="exit"
-                class="w-8 h-8 ml-2"
+                src={chat.avatarUrl}
+                alt="avatar"
+                class="h-8 w-8 rounded-full ml-2"
             />
-        </a>
-        <img
-            src={chat.avatarUrl}
-            alt="avatar"
-            class="h-8 w-8 rounded-full ml-2"
-        />
-        <span class="w-full font-bold ml-4 mt-1">{chat.name}</span>
-        <div class="flex flex-row justify-end w-48 pr-4">
-            <img
-                src="/icons/call.svg"
-                alt="exit"
-                class="w-6 h-6 ml-2"
-            />
-            <img
-                src="/icons/options.svg"
-                alt="exit"
-                class="w-6 h-6 ml-2"
-            />
+            <span class="w-full font-bold ml-4 mt-1">{chat.name}</span>
+            <div class="flex flex-row justify-end w-48 pr-4">
+                <img
+                    src="/icons/call.svg"
+                    alt="exit"
+                    class="w-6 h-6 ml-2"
+                />
+                <img
+                    src="/icons/options.svg"
+                    alt="exit"
+                    class="w-6 h-6 ml-2"
+                />
+            </div>
         </div>
-    </div>
-    <div class="flex-auto flex flex-col overflow-y-scroll items-start h-full p-4">
-        {#each chat.messages as message}
-            <div class="message-container {message.authorId === user.id ? "right" : "left"}"><div class="message">{message.content}</div></div>
-        {/each}
-    </div>
+        <div class="flex-auto flex flex-col overflow-y-scroll items-start h-full p-4">
+            {#each chat.messages as message}
+                <div class="message-container {message.authorId === user.id ? "right" : "left"}"><div class="message">{message.content}</div></div>
+            {/each}
+        </div>
+    </Loading>
     <form
         class="flex flex-row items-center p-4 border-t border-solid border-secondary"
         on:submit|preventDefault={sendMessage}

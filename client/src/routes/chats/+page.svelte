@@ -2,10 +2,8 @@
     import type { Chat } from "private-messaging";
     import { slide } from "svelte/transition";
     import { chatsStore, setChats } from "$lib/stores/chats";
-    import { makeRequest } from "$lib/api/utils";
-import Loading from "$lib/components/Loading.svelte";
-
-    const chats: Chat[] = $chatsStore;
+    import Loading from "$lib/components/Loading.svelte";
+    import api from "$lib/api";
 
     const chatSections: {
         Pinned: Chat[];
@@ -17,7 +15,7 @@ import Loading from "$lib/components/Loading.svelte";
         Chats: [],
     };
 
-    chats.forEach(chat => {
+    $chatsStore.forEach(chat => {
         if (false /* chat.pinned */) {
             chatSections.Pinned.push(chat);
         } else if (chat.group) {
@@ -32,16 +30,14 @@ import Loading from "$lib/components/Loading.svelte";
     $: selectedTab = "Pinned";
     $: loading = true;
 
-    makeRequest("/chat/all").then(res => {
+    api.chat.getAll().then(res => {
         loading = false;
         if (res.ok) {
             setChats(res.data);
         } else {
-            // handle error
+            // TODO: handle error
         };
     });
-
-    $: console.log(chats);
 </script>
 
 <Loading {loading}>

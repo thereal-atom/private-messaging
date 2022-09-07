@@ -45,7 +45,22 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     };
 };
 
-// const get = async (req: Request, res: Response, next: NextFunction) => {};
+const get = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) throw new AppError(401, "unauthorized");
+
+        const chat = await database.chat.findFirst({
+            where: {
+                id: req.params.id,
+            },
+        });
+        if (!chat) throw new AppError(400, "chat not found");
+
+        res.send(chat);
+    } catch (err) {
+        next(err);
+    };
+};
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -55,7 +70,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
             where: {
                 members: {
                     some: {
-                        email: req.user.email,
+                        id: req.user.id,
                     },
                 },
             },
@@ -72,6 +87,8 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const createMessage = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        if (!req.user) throw new AppError(401, "unauthorized");
+        
         const messageValidation = validation.validateMessage({
             ...req.body,
             chatId: req.params.id,
@@ -111,6 +128,7 @@ const createMessage = async (req: Request, res: Response, next: NextFunction) =>
 
 export {
     create,
-    createMessage,
+    get,
     getAll,
+    createMessage,
 };
