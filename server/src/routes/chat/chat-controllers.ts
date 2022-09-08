@@ -74,6 +74,11 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
                     },
                 },
             },
+            include: {
+                messages: {
+                    take: 100,
+                },
+            },
         });
 
         res.send(chats);

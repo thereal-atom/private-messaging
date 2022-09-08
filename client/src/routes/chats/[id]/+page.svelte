@@ -2,30 +2,12 @@
     import type { User, Chat } from "private-messaging";
     import { page } from "$app/stores";
     import api from "$lib/api";
-    import Loading from "$lib/components/Loading.svelte";
-
-    $: loading = true;
+    import { chatsStore } from "$lib/stores/chats";
     
-    let chat: Chat;
+    let chat: Chat | undefined;
     $: chat;
 
-    // = {
-    //     id: $page.params.id,
-    //     name: "Oscar",
-    //     avatarUrl: "/images/default-avatar.png",
-    //     messages: [],
-    //     group: false,
-    // };
-
-    api.chat.get($page.params.id).then(res => {
-        // loading = false;
-        if (res.ok) {
-            chat = res.data;
-        } else {
-            // TODO: handle error
-            console.log(res);
-        };
-    });
+    chat = $chatsStore.find(c => c.id === $page.params.id);
 
     const user: User = {
         id: "user_someid",
@@ -41,7 +23,7 @@
 
     const sendMessage = (e: any) => {
         const messageContent = e.target.messageContent.value
-        if (!messageContent) return;
+        if (!messageContent || !chat) return;
 
         api.chat.createMessage({
             authorId: "user_someid",
@@ -51,7 +33,7 @@
     };
 </script>
 <div class="flex flex-col h-screen max-h-screen">
-    <Loading {loading}>
+    {#if chat}
         <div class="flex flex-row max-w-screen py-4 items-center border-b border-solid border-secondary">
             <a
                 href="/chats"
@@ -64,7 +46,7 @@
                 />
             </a>
             <img
-                src={chat.avatarUrl}
+                src={chat.avatarUrl || "/images/default-avatar.png"}
                 alt="avatar"
                 class="h-8 w-8 rounded-full ml-2"
             />
@@ -87,29 +69,31 @@
                 <div class="message-container {message.authorId === user.id ? "right" : "left"}"><div class="message">{message.content}</div></div>
             {/each}
         </div>
-    </Loading>
-    <form
-        class="flex flex-row items-center p-4 border-t border-solid border-secondary"
-        on:submit|preventDefault={sendMessage}
-    >
-        <img
-            src="/icons/file.svg"
-            alt="file"
-            class="w-10 h-10 bg-dark-secondary p-2 rounded-md bg-opacity-30"
-        />
-        <input
-            class="rounded-md ml-3 bg-dark-secondary w-full h-10 pl-4 font-bold text-sm"
-            placeholder="Message {chat.name}"
-            name="messageContent"
-        />
-        <button type="submit">
+        <form
+            class="flex flex-row items-center p-4 border-t border-solid border-secondary"
+            on:submit|preventDefault={sendMessage}
+        >
             <img
-                src="/icons/send.svg"
-                alt="send"
-                class="w-10 h-10 ml-2 rounded-full p-2"
+                src="/icons/file.svg"
+                alt="file"
+                class="w-10 h-10 bg-dark-secondary p-2 rounded-md bg-opacity-30"
             />
-        </button>
-    </form>
+            <input
+                class="rounded-md ml-3 bg-dark-secondary w-full h-10 pl-4 font-bold text-sm"
+                placeholder="Message {chat.name}"
+                name="messageContent"
+            />
+            <button type="submit">
+                <img
+                    src="/icons/send.svg"
+                    alt="send"
+                    class="w-10 h-10 ml-2 rounded-full p-2"
+                />
+            </button>
+        </form>
+    {:else}
+        <span>No chat found</span>
+    {/if}
 </div>
 
 <style lang="postcss">

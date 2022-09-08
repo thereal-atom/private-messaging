@@ -6,23 +6,27 @@
     import api from "$lib/api";
 
     const chatSections: {
-        Pinned: Chat[];
-        Groups: Chat[];
-        Chats: Chat[];
+        Pinned: Record<string, Chat>;
+        Groups: Record<string, Chat>;
+        Chats: Record<string, Chat>;
     } = {
-        Pinned: [],
-        Groups: [],
-        Chats: [],
+        Pinned: {},
+        Groups: {},
+        Chats: {},
     };
 
-    $chatsStore.forEach(chat => {
-        if (false /* chat.pinned */) {
-            chatSections.Pinned.push(chat);
-        } else if (chat.group) {
-            chatSections.Groups.push(chat);
-        } else {
-            chatSections.Chats.push(chat);
-        };
+    chatsStore.subscribe(chats => {
+        if (chats.length <= 0) return;
+
+        chats.forEach(chat => {
+            if (false /* chat.pinned */) {
+                chatSections.Pinned[chat.id] = chat;
+            } else if (chat.group) {
+                chatSections.Groups[chat.id] = chat;
+            } else {
+                chatSections.Chats[chat.id] = chat;
+            };
+        });
     });
 
     $: isSearchbarActive = false;
@@ -125,12 +129,13 @@
         </div>
         <div class="flex flex-col px-8 mt-8 relative">
             {#each Object.entries(chatSections) as [sectionTitle, sectionChats]}
+                {@const sectionChatsArray = Object.values(sectionChats)}
                 {#if selectedTab === sectionTitle}
                     <div class="flex flex-col">
                         <span class="font-bold text-secondary">{sectionTitle}</span>
-                        {#if sectionChats.length > 0}
+                        {#if sectionChatsArray.length > 0}
                         <div class="flex flex-col my-4">
-                            {#each sectionChats as sectionChat}
+                            {#each sectionChatsArray as sectionChat}
                                 <a
                                     class="flex flex-row items-center my-2"
                                     href="/chats/{sectionChat.id}"
