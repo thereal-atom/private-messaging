@@ -8,6 +8,7 @@ io.on("error", data => {
 });
 
 io.on("messageCreate", message => {
+    console.log("client: a message was created");
     addMessage(message);
 });
 

@@ -4,7 +4,9 @@ import type {
     ServerToClientEvents,
 } from "private-messaging";
 
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = ioClient("http://localhost:50451");
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = ioClient("http://localhost:50451", {
+    withCredentials: true,
+});
 
 socket.on("connected", () => {
     console.log("ws connected");

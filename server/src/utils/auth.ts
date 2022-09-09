@@ -51,7 +51,8 @@ const decryptString = (string: string) => {
 
 export const deserializeSession = async (req: Request, res: Response, next: NextFunction) => {
     // I encrypt the session id but I honestly don't know if I need to
-    const encryptedSessionId = req.cookies.session;
+    // when being sent as a header like with web sockets it has to be extracted and decoded
+    const encryptedSessionId = req.cookies.session || decodeURIComponent(req.headers.session?.toString().split("=")[1] || "");
     if (!encryptedSessionId || encryptedSessionId === null) return next();
 
     const sessionId = decryptString(encryptedSessionId);

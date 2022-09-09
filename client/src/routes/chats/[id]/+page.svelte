@@ -30,7 +30,15 @@
             chatId: chat.id,
             content: messageContent,
         });
+
+        e.target.messageContent.value = "";
     };
+
+    $: console.log($chatsStore);
+
+    // TODO: if this is the first thing being loaded
+    // i.e user is coming to this url directly rather than from the chats page
+    // then it should fetch all the chats: `if ($chatsStore.length <= 0) api.chat.getChats())`
 </script>
 <div class="flex flex-col h-screen max-h-screen">
     {#if chat}
@@ -64,8 +72,8 @@
                 />
             </div>
         </div>
-        <div class="flex-auto flex flex-col overflow-y-scroll items-start h-full p-4">
-            {#each chat.messages as message}
+        <div class="flex-auto flex flex-col-reverse overflow-y-scroll items-start h-full p-4">
+            {#each chat.messages.sort(msg => msg.createdAt) as message}
                 <div class="message-container {message.authorId === user.id ? "right" : "left"}"><div class="message">{message.content}</div></div>
             {/each}
         </div>

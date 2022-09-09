@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { io } from "../../app";
 import {
     // PartialChat,
@@ -13,25 +14,33 @@ io.on("connection", socket => {
     console.log("client connected");
 
     socket.on("messageCreate", (message: PartialMessage) => {
-        console.log("message was created");
-        // create message in database
-        internalRequest(`/chat/${message.chatId}/message`, {
-            method: "POST",
-            data: message,
-        }).then(res => {
-            if (res.ok) {
-                // if successful send to all connected sockets (io.emit())
-                io.emit("messageCreate", res.data);
-            } else {
-                // else send error message to client who sent the message (socket.emit())
-                console.log(res);
-
-                socket.emit("error", {
-                    event: "messageCreate",
-                    message: "there was an error",
-                });
-            };
+        const sessionCookie = socket.handshake.headers.cookie;
+        if (!sessionCookie) return socket.emit("error", {
+            event: "messageCreate",
+            message: "unauthorized",
         });
+
+        // create message in database
+        try {
+            internalRequest(`/chat/${message.chatId}/message`, {
+                method: "POST",
+                data: message,
+                headers: {
+                    "session": sessionCookie,
+                },
+            }).then(res => {
+                // if successful send to all connected sockets (io.emit())
+                io.emit("messageCreate", res);
+            });
+        } catch (err: any) {
+            // if unsuccessful send error to socket
+
+            socket.emit("error", {
+                event: "messageCreate",
+                message: err.message || "there was an error",
+            });
+        };
+        
     });
 
     // socket.on("messageUpdate", (message: PartialUpdatedMessage) => {

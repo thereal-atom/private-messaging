@@ -8,12 +8,15 @@ export const setChats = (chats: Chat[]) => {
 };
 
 export const addMessage = (message: Message) => {
-    chatsStore.update(chats => {
-        const chat = chats.find(chat => chat.id === message.chatId);
-        if (chat) {
-            chat.messages.push(message);
-        };
+    chatsStore.subscribe(chats => {
+        const chatIndex = chats.findIndex(chat => chat.id === message.chatId);
+        const chat = chats[chatIndex];
+        if (!chat) return;
 
-        return chats;
+        chat.messages.push(message);
+
+        chats[chatIndex] = chat;
+
+        chatsStore.set(chats);
     });
 };
